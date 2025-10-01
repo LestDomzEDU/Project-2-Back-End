@@ -1,50 +1,59 @@
 package com.example.sportsbook.controller;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/admin")
+@CrossOrigin(origins = "*")
 public class EventAdminController {
   private final JdbcTemplate jdbc;
   public EventAdminController(JdbcTemplate jdbc){ this.jdbc = jdbc; }
 
-  public static class SettleRequest { public String result; } // "HOME" or "AWAY"
+  record CreateEventRequest(String league, String homeTeam, String awayTeam, String startTimeIso) {}
 
-  @PutMapping("/events/{id}/settlement")
-  @Transactional
-  public Map<String,Object> settle(@PathVariable Long id, @RequestBody SettleRequest req){
-    if (req == null || req.result == null)
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "result required");
-    String result = req.result.trim().toUpperCase();
-    if (!result.equals("HOME") && !result.equals("AWAY"))
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "result must be HOME or AWAY");
+  @PostMapping("/events")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Map<String,Object> createEvent(@RequestBody CreateEventRequest req){
+    long eventId = jdbc.queryForObject(
+      "INSERT INTO events (league, home_team, away_team, start_time) VALUES (?,?,?,CAST(? AS TIMESTAMPTZ)) RETURNING id",
+      Long.class, req.league(), req.homeTeam(), req.awayTeam(), req.startTimeIso()
+    );
+    long marketId = jdbc.queryForObject(
+      "INSERT INTO markets (event_id, type) VALUES (?, 'MONEYLINE') RETURNING id",
+      Long.class, eventId
+    );
+    jdbc.update("INSERT INTO odds (market_id, selection, american, decimal) VALUES (?,?,?,?)",
+      marketId, "HOME", -110, 1.91);
+    jdbc.update("INSERT INTO odds (market_id, selection, american, decimal) VALUES (?,?,?,?)",
+      marketId, "AWAY", -110, 1.91);
 
-    // Ensure event exists and not already FINAL
-    List<Map<String,Object>> rows = jdbc.queryForList(
-      "SELECT status FROM events WHERE id = ?", id);
-    if (rows.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "event not found");
-    String status = String.valueOf(rows.get(0).get("status"));
-    if ("FINAL".equalsIgnoreCase(status))
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "event already final");
+    Map<String,Object> out = new HashMap<>();
+    out.put("id", eventId);
+    return out;
+  }
 
-    // Mark event final with result
-    int eUpd = jdbc.update(
-      "UPDATE events SET status = 'FINAL', result = ? WHERE id = ?", result, id);
-    if (eUpd != 1) throw new ResponseStatusException(HttpStatus.CONFLICT, "event changed; try again");
+  record ResultRequest(String result) {}
 
-    // Cascade bet outcomes
-    int won  = jdbc.update("UPDATE bets SET state = 'WON'  WHERE event_id = ? AND selection = ? AND state = 'PENDING'", id, result);
-    int lost = jdbc.update("UPDATE bets SET state = 'LOST' WHERE event_id = ? AND selection <> ? AND state = 'PENDING'", id, result);
+  @PutMapping("/events/{id}/result")
+  public Map<String,Object> setResult(@PathVariable long id, @RequestBody ResultRequest req){
+    String result = req.result();
+    if (!"HOME".equalsIgnoreCase(result) && !"AWAY".equalsIgnoreCase(result)){
+      throw new IllegalArgumentException("result must be HOME or AWAY");
+    }
+    jdbc.update("UPDATE events SET result = ?, status = 'FINISHED' WHERE id = ?", result.toUpperCase(), id);
 
-    Map<String,Object> out = new LinkedHashMap<>();
+    // settle bets
+    int won = jdbc.update("UPDATE bets SET state='WON', settled_at=NOW() WHERE event_id=? AND selection = ?", id, result.toUpperCase());
+    int lost = jdbc.update("UPDATE bets SET state='LOST', settled_at=NOW() WHERE event_id=? AND selection <> ?", id, result.toUpperCase());
+
+    Map<String,Object> out = new HashMap<>();
     out.put("eventId", id);
-    out.put("result", result);
+    out.put("result", result.toUpperCase());
     out.put("betsWon", won);
     out.put("betsLost", lost);
     return out;

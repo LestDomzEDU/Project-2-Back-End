@@ -1,9 +1,14 @@
+// src/main/java/com/example/sportsbook/controller/HealthController.java
 package com.example.sportsbook.controller;
+
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+
 @RestController
-@RequestMapping("/health")
+@RequestMapping("/api")
 public class HealthController {
-  @GetMapping
-  public Map<String,String> ok(){ return Map.of("status","ok"); }
+  @GetMapping("/health")
+  public Map<String,String> health() {
+    return Map.of("status", "ok");
+  }
 }

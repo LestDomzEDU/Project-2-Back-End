@@ -22,3 +22,12 @@ npm install
 Set EXPO_PUBLIC_API_BASE env var
 
 npx expo start -c
+
+# Heroku set up instructions:
+# Windows PowerShell
+$env:EXPO_PUBLIC_API_BASE="https://sportsbook-api-lester--efa829183023.herokuapp.com"
+npx expo start -c
+
+# Run backend locally (optional)
+docker compose up -d
+mvn spring-boot:run

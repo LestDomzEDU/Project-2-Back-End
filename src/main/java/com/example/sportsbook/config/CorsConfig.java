@@ -12,7 +12,7 @@ public class CorsConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET","POST","PUT","DELETE","OPTIONS");
+        registry.addMapping("/**").allowedOrigins("http://localhost:19006", "https://sportsbook-api-lester-efa829183023.herokuapp.com", "mysql://o3l8hudq5ybihbjr:b1h74d3w3mveenkf@gmgcjwawatv599gq.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/y3r8m33tban043u4").allowedMethods("GET","POST","PUT","DELETE","OPTIONS").allowCredentials(true);;
       }
     };
   }

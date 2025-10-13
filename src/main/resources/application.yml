@@ -1,17 +1,44 @@
+# src/main/resources/application.yml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/sportsbook   # use 5433 if you mapped 5433
-    username: sb
-    password: sbpw
+    # Prefer either SPRING_DATASOURCE_URL or JDBC_DATABASE_URL in Heroku.
+    url: ${SPRING_DATASOURCE_URL:${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/sportsbook?sslMode=DISABLED&serverTimezone=UTC}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:sb}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:sbpw}}
+    # Force MariaDB driver by default (works with JawsDB MySQL)
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.mariadb.jdbc.Driver}
+
   jpa:
+    open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate        # we rely on Flyway for schema
     properties:
+      hibernate.dialect: org.hibernate.dialect.MariaDBDialect
       hibernate.jdbc.time_zone: UTC
+
   flyway:
     enabled: true
+    # baseline-on-migrate: true   # <- only if adopting an existing schema (usually leave off)
+
+  sql:
+    init:
+      mode: never                # avoid Spring running schema.sql/data.sql
+
 server:
+  port: ${PORT:8080}
   error:
     include-message: always
     include-binding-errors: always
-  port: 8080
+
+# Helpful while wiring things up
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    org.flywaydb: INFO
+    org.springframework.jdbc.datasource: INFO
+    org.springframework.jdbc.core: INFO

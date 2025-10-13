@@ -9,10 +9,12 @@ public class CorsConfig implements WebMvcConfigurer {
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
-        // add your real front-end origins here:
+        // 👇 list real front-end origins here; no "*" when allowCredentials=true
         .allowedOriginPatterns(
             "http://localhost:3000",
             "http://localhost:5173",
+            "https://*.vercel.app",
+            "https://*.netlify.app",
             "https://<your-frontend-domain>"
         )
         .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
@@ -21,4 +23,3 @@ public class CorsConfig implements WebMvcConfigurer {
         .maxAge(3600);
   }
 }
-

@@ -8,7 +8,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
 public class EventController {
   private final JdbcTemplate jdbc;
   public EventController(JdbcTemplate jdbc){ this.jdbc = jdbc; }

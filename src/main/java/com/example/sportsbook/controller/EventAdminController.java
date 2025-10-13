@@ -9,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = "*")
 public class EventAdminController {
   private final JdbcTemplate jdbc;
   public EventAdminController(JdbcTemplate jdbc){ this.jdbc = jdbc; }

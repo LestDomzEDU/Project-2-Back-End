@@ -1,5 +1,4 @@
 -- V1__init.sql  (MariaDB/MySQL)
-
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   email VARCHAR(255) UNIQUE NOT NULL,
@@ -14,13 +13,13 @@ CREATE TABLE IF NOT EXISTS events (
   away_team VARCHAR(100) NOT NULL,
   start_time TIMESTAMP NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
-  result VARCHAR(10) NULL
+  result VARCHAR(10)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS markets (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   event_id BIGINT NOT NULL,
-  type VARCHAR(20) NOT NULL,        -- e.g. 'MONEYLINE'
+  type VARCHAR(20) NOT NULL,
   CONSTRAINT fk_market_event FOREIGN KEY (event_id) REFERENCES events(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -28,8 +27,8 @@ CREATE TABLE IF NOT EXISTS markets (
 CREATE TABLE IF NOT EXISTS odds (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   market_id BIGINT NOT NULL,
-  selection VARCHAR(10) NOT NULL,   -- 'HOME' | 'AWAY'
-  american INT NOT NULL,            -- e.g. -150, +130
+  selection VARCHAR(10) NOT NULL,
+  american INT NOT NULL,
   decimal_odds DECIMAL(6,2) NOT NULL,
   CONSTRAINT fk_odds_market FOREIGN KEY (market_id) REFERENCES markets(id)
     ON DELETE CASCADE
@@ -39,7 +38,7 @@ CREATE TABLE IF NOT EXISTS bets (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   user_id BIGINT NOT NULL,
   event_id BIGINT NOT NULL,
-  selection VARCHAR(10) NOT NULL,   -- 'HOME' | 'AWAY'
+  selection VARCHAR(10) NOT NULL,
   stake_cents INT NOT NULL,
   potential_payout_cents INT NOT NULL,
   placed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

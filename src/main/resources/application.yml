@@ -18,7 +18,8 @@ spring:
 
   flyway:
     enabled: true
-    # baseline-on-migrate: true   # <- only if adopting an existing schema (usually leave off)
+    clean-disabled: false
+    validate-on-migrate: true
 
   sql:
     init:

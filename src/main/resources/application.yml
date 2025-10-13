@@ -1,45 +1,56 @@
-# src/main/resources/application.yml
+# application.yml
+# Heroku + JawsDB MariaDB + Spring Boot 3
+
 spring:
   datasource:
-    # Prefer either SPRING_DATASOURCE_URL or JDBC_DATABASE_URL in Heroku.
-    url: ${SPRING_DATASOURCE_URL:${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/sportsbook?sslMode=DISABLED&serverTimezone=UTC}}
-    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:sb}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:sbpw}}
-    # Force MariaDB driver by default (works with JawsDB MySQL)
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.mariadb.jdbc.Driver}
+    # Heroku env vars: SPRING_DATASOURCE_URL/USERNAME/PASSWORD are set in Config Vars.
+    # Fallback to JDBC_DATABASE_URL if present.
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:${JDBC_DATABASE_URL:}}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      # Keep this small for JawsDB free/shared plans
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 25000
+      idle-timeout: 300000
+      max-lifetime: 1800000
 
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate        # we rely on Flyway for schema
+      ddl-auto: none           # Flyway manages schema
     properties:
-      hibernate.dialect: org.hibernate.dialect.MariaDBDialect
-      hibernate.jdbc.time_zone: UTC
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
 
   flyway:
     enabled: true
-    clean-disabled: false
-    validate-on-migrate: true
+    locations: classpath:db/migration  # V1__init.sql, V2__seed.sql here
+    clean-disabled: true               # don't wipe the DB on startup
 
-  sql:
-    init:
-      mode: never                # avoid Spring running schema.sql/data.sql
+  # Global CORS (fixes "allowCredentials + *" error)
+  mvc:
+    cors:
+      mappings:
+        "[/**]":
+          allowed-origin-patterns:
+            - "http://localhost:3000"
+            - "http://localhost:5173"
+            - "https://*.vercel.app"
+            - "https://*.netlify.app"
+            - "https://<your-frontend-domain>"  # replace with your real frontend origin if needed
+          allowed-methods: [GET, POST, PUT, DELETE, OPTIONS]
+          allowed-headers: "*"
+          allow-credentials: true
+          max-age: 3600
 
 server:
-  port: ${PORT:8080}
-  error:
-    include-message: always
-    include-binding-errors: always
+  forward-headers-strategy: native
 
-# Helpful while wiring things up
 management:
   endpoints:
     web:
       exposure:
         include: health,info
-
-logging:
-  level:
-    org.flywaydb: INFO
-    org.springframework.jdbc.datasource: INFO
-    org.springframework.jdbc.core: INFO

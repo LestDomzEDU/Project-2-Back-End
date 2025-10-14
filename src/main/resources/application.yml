@@ -29,6 +29,23 @@ spring:
     enabled: true
     locations: classpath:db/migration  # V1__init.sql, V2__seed.sql here
     clean-disabled: true               # don't wipe the DB on startup
+#NEW OAUTH CHANGES HERE
+    security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23livgqylxL6y8WCnX 
+            client-secret: 93a0c79c3c0ec5f66bf956bf7fecdc39a8bf5770
+            scope: user:email
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
 
   # Global CORS (fixes "allowCredentials + *" error)
   mvc:

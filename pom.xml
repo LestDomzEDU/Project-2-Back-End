@@ -21,23 +21,17 @@
   </properties>
 
   <dependencies>
-    <!-- Web / JSON -->
+    <!-- Web + Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <!-- JDBC + validation -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-	<OAUTH CHANGES HERE>
+    <!-- Security + OAuth2 Login (Google/GitHub/Auth0 etc.) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -47,13 +41,25 @@
       <artifactId>spring-boot-starter-oauth2-client</artifactId>
     </dependency>
 
-    <!-- (Optional) Actuator for /actuator/health -->
+    <!-- If you prefer verifying tokens from the front-end (e.g., Firebase ID tokens), uncomment Resource Server
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    -->
+
+    <!-- Data JPA + MariaDB driver -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+      <version>3.4.1</version>
     </dependency>
 
-    <!-- Flyway migrations -->
+    <!-- Flyway migrations (optional but recommended) -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
@@ -64,14 +70,13 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- MariaDB JDBC driver (works with MySQL/JawsDB) -->
+    <!-- Actuator (health/info for Heroku) -->
     <dependency>
-      <groupId>org.mariadb.jdbc</groupId>
-      <artifactId>mariadb-java-client</artifactId>
-      <version>3.3.2</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
-    <!-- Tests -->
+    <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -84,6 +89,14 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

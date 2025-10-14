@@ -1,8 +1,9 @@
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\config\CorsConfig.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\ApiErrorHandler.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\BetController.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\BetRequest.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\EventAdminController.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\EventController.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\HealthController.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\SportsbookApplication.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/SportsbookApplication.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/config/CorsConfig.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/ApiErrorHandler.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/BetController.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/BetRequest.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/EventAdminController.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/EventController.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/HealthController.java
+/Users/magdavicente/Project2/Project-2-Back-End/src/main/java/com/example/sportsbook/controller/UserController.java

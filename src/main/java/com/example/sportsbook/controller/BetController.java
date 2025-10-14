@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
 public class BetController {
   private final JdbcTemplate jdbc;
 

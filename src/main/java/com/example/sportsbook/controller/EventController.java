@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
 public class EventController {
   private final JdbcTemplate jdbc;
   public EventController(JdbcTemplate jdbc){ this.jdbc = jdbc; }

@@ -1,0 +1,9 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: sportsbook
+      POSTGRES_USER: sb
+      POSTGRES_PASSWORD: sbpw
+    ports:
+      - "5432:5432"

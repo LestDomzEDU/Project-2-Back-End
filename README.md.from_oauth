@@ -6,7 +6,7 @@ EXPO_PUBLIC_API_BASE=http://localhost:8080 npx expo start
 EXPO_PUBLIC_API_BASE=http://10.0.2.2:8080 npx expo start
 
 # Physical device
-EXPO_PUBLIC_API_BASE=http://192.168.x.x:8080 npx expo start
+EXPO_PUBLIC_API_BASE="https://sportsbook-api-lester--efa829183023.herokuapp.com" npx expo start -c
 
 
 **When you are running the back-end repo, use these commands:**
@@ -22,3 +22,12 @@ npm install
 Set EXPO_PUBLIC_API_BASE env var
 
 npx expo start -c
+
+# Heroku set up instructions:
+# Windows PowerShell
+$env:EXPO_PUBLIC_API_BASE="https://sportsbook-api-lester--efa829183023.herokuapp.com"
+npx expo start -c
+
+# Run backend locally (optional)
+docker compose up -d
+mvn spring-boot:run

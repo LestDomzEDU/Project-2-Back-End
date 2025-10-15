@@ -1,4 +1,12 @@
 // src/main/java/com/example/sportsbook/bets/BettingService.java
+package com.example.sportsbook.bets;
+
+import com.example.sportsbook.bets.dto.PlaceBetRequest;
+import com.example.sportsbook.bets.dto.SetResultRequest;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+
 public class BettingService {
 private final BetRepository bets;
 

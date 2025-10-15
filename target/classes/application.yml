@@ -72,3 +72,17 @@ management:
     web:
       exposure:
         include: health,info
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+  port: 8080
+
+app:
+  oauth:
+    enabled: ${APP_OAUTH_ENABLED:false}

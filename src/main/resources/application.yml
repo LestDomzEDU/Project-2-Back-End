@@ -1,83 +1,35 @@
-# application.yml — Spring Boot 3 + Heroku + JawsDB MariaDB + OAuth2 (Google sample)
 server:
   port: ${PORT:8080}
-  forward-headers-strategy: native
 
 spring:
-  application:
-    name: sportsbook-api
-  jpa:
-    hibernate:
-      ddl-auto: update     # <-- key bit
-    open-in-view: false
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-
   datasource:
-    # Prefer these three if you set them in Heroku Config Vars explicitly
-    url: ${SPRING_DATASOURCE_URL:}
-    username: ${SPRING_DATASOURCE_USERNAME:}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
-    hikari:
-      maximum-pool-size: 5
-      minimum-idle: 1
-      connection-timeout: 25000
-
   jpa:
     hibernate:
-      ddl-auto: update   # TIP: for prod use 'validate' and manage schema via Flyway
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     open-in-view: false
-    properties:
-      hibernate:
-        format_sql: false
-        jdbc:
-          time_zone: UTC
-
-  flyway:
-    enabled: false   # flip to true when you have migrations in src/main/resources/db/migration
-
   security:
     oauth2:
       client:
         registration:
-          # --- Google example (server-side OAuth2 login via Spring Security) ---
           google:
             client-id: ${GOOGLE_CLIENT_ID:}
             client-secret: ${GOOGLE_CLIENT_SECRET:}
-            scope: openid,profile,email
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: [openid, profile, email]
         provider:
           google:
             issuer-uri: https://accounts.google.com
-
-# If you're doing token verification from the front-end (e.g. Firebase),
-# comment the oauth2.client block above and instead enable Resource Server:
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          issuer-uri: https://securetoken.google.com/${FIREBASE_PROJECT_ID}
-#          jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com
-
-# CORS — list your real front-end origins (no wildcard when allowCredentials=true)
-cors:
-  allowed-origins:
-    - http://localhost:3000
-    - http://localhost:5173
-    - https://*.vercel.app
-    - https://*.netlify.app
-    - https://your-frontend.example.com
-  allowed-methods: [GET, POST, PUT, DELETE, OPTIONS]
-  allowed-headers: ["*"]
-  allow-credentials: true
-  max-age: 3600
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
+app:
+  oauth:
+    enabled: ${APP_OAUTH_ENABLED:false}
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}

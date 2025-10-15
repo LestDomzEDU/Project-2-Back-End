@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = "*")
 public class EventAdminController {
   private final JdbcTemplate jdbc;
   public EventAdminController(JdbcTemplate jdbc){ this.jdbc = jdbc; }

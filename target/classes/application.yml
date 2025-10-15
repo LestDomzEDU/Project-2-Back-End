@@ -6,6 +6,15 @@ server:
 spring:
   application:
     name: sportsbook-api
+  jpa:
+    hibernate:
+      ddl-auto: update     # <-- key bit
+    open-in-view: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
   datasource:
     # Prefer these three if you set them in Heroku Config Vars explicitly

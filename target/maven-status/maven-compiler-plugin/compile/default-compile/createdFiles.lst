@@ -4,13 +4,11 @@ com\example\sportsbook\controller\UserController.class
 com\example\sportsbook\bets\BettingService.class
 com\example\sportsbook\SecurityConfig.class
 com\example\sportsbook\bets\dto\SetResultRequest.class
-com\example\sportsbook\controller\BetRequest.class
 com\example\sportsbook\bets\dto\PlaceBetRequest.class
 com\example\sportsbook\controller\EventAdminController$ResultRequest.class
 com\example\sportsbook\bets\BetsController.class
 com\example\sportsbook\controller\ApiErrorHandler.class
 com\example\sportsbook\controller\EventController.class
-com\example\sportsbook\controller\BetController.class
 com\example\sportsbook\admin\BetAdminController.class
 com\example\sportsbook\SportsbookApplication.class
 com\example\sportsbook\controller\EventAdminController.class

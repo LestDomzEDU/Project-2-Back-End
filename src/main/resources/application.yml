@@ -1,35 +1,41 @@
 server:
-  port: ${PORT:8080}
-
-spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.mariadb.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-    open-in-view: false
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID:}
-            client-secret: ${GOOGLE_CLIENT_SECRET:}
-            scope: [openid, profile, email]
-        provider:
-          google:
-            issuer-uri: https://accounts.google.com
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
+  port: 8080
+  error:
+    include-message: always
 
 app:
   oauth:
     enabled: ${APP_OAUTH_ENABLED:false}
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
+spring:
+  datasource:
+    # Local default (Docker or local MariaDB). Override with env vars on Heroku.
+    url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/sportsbook}
+    username: ${SPRING_DATASOURCE_USERNAME:sb}
+    password: ${SPRING_DATASOURCE_PASSWORD:sbpw}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none        # keep 'update' while developing; switch to 'none' if you turn Flyway on
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+
+  flyway:
+    enabled: true      # leave OFF for now to avoid conflicts with ddl-auto
+    baseline-on-migrate: true
+
+  security:
+    oauth2:
+      client: {}              # keep valid but empty while OAuth is unfinished
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,mappings"
+

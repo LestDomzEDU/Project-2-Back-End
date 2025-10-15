@@ -1,12 +1,10 @@
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\Bet.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BetAdminController.java
+C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BetController.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BetRepository.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BetsController.java
+C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BetService.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BetStatus.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\BettingService.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\dto\BetResponse.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\dto\PlaceBetRequest.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\dto\SetResultRequest.java
+C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\dto\CreateBetRequest.java
+C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\dto\UpdateBetStatusRequest.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\bets\Selection.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\config\CorsConfig.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\config\FlywayRepairConfig.java
@@ -15,5 +13,6 @@ C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\ex
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\EventController.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\HealthController.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\controller\UserController.java
-C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\SecurityConfig.java
+C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\NoAuthSecurityConfig.java
+C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\OAuthSecurityConfig.java
 C:\Users\leste\OneDrive\Documents\GitHub\Project-2-Back-End\src\main\java\com\example\sportsbook\SportsbookApplication.java

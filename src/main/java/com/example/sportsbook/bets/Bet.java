@@ -1,76 +1,68 @@
-// src/main/java/com/example/sportsbook/bets/Bet.java
 package com.example.sportsbook.bets;
-
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-
 @Entity
 @Table(name = "bets", indexes = {
-@Index(name = "ix_bets_event", columnList = "eventId"),
-@Index(name = "ix_bets_bettor", columnList = "bettorRef")
+  @Index(name = "idx_bets_bettor_ref", columnList = "bettor_ref"),
+  @Index(name = "idx_bets_event_id", columnList = "event_id")
 })
 public class Bet {
-@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long id;
 
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-@Column(nullable = false)
-private String eventId; // your event identifier (String to keep flexible)
+  @Column(name = "bettor_ref", nullable = false, length = 100)
+  @NotBlank
+  private String bettorRef;
 
+  @Column(name = "event_id", nullable = false)
+  @NotNull
+  private Long eventId;
 
-@Enumerated(EnumType.STRING)
-@Column(nullable = false)
-private Selection selection; // HOME/AWAY/DRAW
+  @Column(name = "selection", nullable = false, length = 50)
+  @NotBlank
+  private String selection; // e.g., "HOME", "AWAY", "DRAW", "OVER_2_5"
 
+  @Column(name = "odds", nullable = false, precision = 10, scale = 4)
+  @NotNull @DecimalMin("1.0001")
+  private BigDecimal odds;
 
-@Column(nullable = false, precision = 12, scale = 2)
-@DecimalMin(value = "1.00", message = "Minimum stake is 1.00")
-private BigDecimal stake; // money
+  @Column(name = "stake", nullable = false, precision = 12, scale = 2)
+  @NotNull @DecimalMin("0.01")
+  private BigDecimal stake;
 
+  @Column(name = "status", nullable = false, length = 20)
+  @NotBlank
+  private String status; // NEW, WON, LOST, VOID
 
-@Column(nullable = false, precision = 8, scale = 2)
-@DecimalMin(value = "1.01", message = "Odds must be ≥ 1.01")
-private BigDecimal oddsDecimal; // decimal odds (e.g., 1.50)
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Instant createdAt;
 
+  @PrePersist
+  void onCreate() {
+    this.createdAt = Instant.now();
+    if (this.status == null || this.status.isBlank()) this.status = "NEW";
+  }
 
-@Column(nullable = false, precision = 14, scale = 2)
-private BigDecimal potentialPayout; // stake * odds, precomputed for display
-
-
-@Enumerated(EnumType.STRING)
-@Column(nullable = false)
-private BetStatus status = BetStatus.PENDING;
-
-
-// Temporary bettor reference while OAuth is off (e.g., from header X-PLAYER-ID).
-// When OAuth is on, set this to the authenticated user email or userId.
-@Column(nullable = false)
-private String bettorRef;
-
-
-@Column(nullable = false)
-private Instant placedAt = Instant.now();
-
-
-public Long getId() { return id; }
-public String getEventId() { return eventId; }
-public void setEventId(String eventId) { this.eventId = eventId; }
-public Selection getSelection() { return selection; }
-public void setSelection(Selection selection) { this.selection = selection; }
-public BigDecimal getStake() { return stake; }
-public void setStake(BigDecimal stake) { this.stake = stake; }
-public BigDecimal getOddsDecimal() { return oddsDecimal; }
-public void setOddsDecimal(BigDecimal oddsDecimal) { this.oddsDecimal = oddsDecimal; }
-public BigDecimal getPotentialPayout() { return potentialPayout; }
-public void setPotentialPayout(BigDecimal potentialPayout) { this.potentialPayout = potentialPayout; }
-public BetStatus getStatus() { return status; }
-public void setStatus(BetStatus status) { this.status = status; }
-public String getBettorRef() { return bettorRef; }
-public void setBettorRef(String bettorRef) { this.bettorRef = bettorRef; }
-public Instant getPlacedAt() { return placedAt; }
-public void setPlacedAt(Instant placedAt) { this.placedAt = placedAt; }
+  // getters/setters…
+  public Long getId() { return id; }
+  public void setId(Long id) { this.id = id; }
+  public String getBettorRef() { return bettorRef; }
+  public void setBettorRef(String bettorRef) { this.bettorRef = bettorRef; }
+  public Long getEventId() { return eventId; }
+  public void setEventId(Long eventId) { this.eventId = eventId; }
+  public String getSelection() { return selection; }
+  public void setSelection(String selection) { this.selection = selection; }
+  public BigDecimal getOdds() { return odds; }
+  public void setOdds(BigDecimal odds) { this.odds = odds; }
+  public BigDecimal getStake() { return stake; }
+  public void setStake(BigDecimal stake) { this.stake = stake; }
+  public String getStatus() { return status; }
+  public void setStatus(String status) { this.status = status; }
+  public Instant getCreatedAt() { return createdAt; }
+  public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

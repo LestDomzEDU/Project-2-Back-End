@@ -1,5 +1,8 @@
 package com.example.sportsbook.config;
 
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,16 +10,11 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
-/**
- * Ensures Flyway is configured and runs repair() safely at startup.
- * Works even if Flyway isn't auto-configured by Spring Boot.
- */
 @Configuration
-@ConditionalOnClass(Flyway.class)
+@ConditionalOnProperty(value = "spring.flyway.enabled", havingValue = "true", matchIfMissing = true)
 public class FlywayRepairConfig {
 
     private static final Logger log = LoggerFactory.getLogger(FlywayRepairConfig.class);

@@ -1,36 +1,39 @@
 package com.example.sportsbook.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "bets")
 public class Bet {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private Long eventId;
-    private Long userId;
+
+    @Column
+    private Long userId; // optional
+
+    @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal amount;
-    private String selection;   // "HOME" or "AWAY"
-    private Integer odds;       // e.g., 110, -150
-    private String status;      // "pending" or "settled"
-    private String result;      // "", "HOME", or "AWAY"
-    private LocalDateTime createdAt;
 
-    public Bet() { }
+    @Column(nullable = false, length = 16)
+    private String selection; // "HOME" or "AWAY"
 
-    public Bet(Long id, Long eventId, Long userId, BigDecimal amount,
-               String selection, Integer odds, String status, String result,
-               LocalDateTime createdAt) {
-        this.id = id;
-        this.eventId = eventId;
-        this.userId = userId;
-        this.amount = amount;
-        this.selection = selection;
-        this.odds = odds;
-        this.status = status;
-        this.result = result;
-        this.createdAt = createdAt;
-    }
+    @Column(nullable = false)
+    private Integer odds; // e.g., 110, -150
 
-    // getters & setters
+    @Column(nullable = false, length = 16)
+    private String status = "pending";
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    // --- Getters & Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -51,9 +54,6 @@ public class Bet {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public String getResult() { return result; }
-    public void setResult(String result) { this.result = result; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

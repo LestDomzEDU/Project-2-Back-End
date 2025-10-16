@@ -1,5 +1,4 @@
 server:
-  # Heroku provides PORT; default to 8080 locally
   port: ${PORT:8080}
   error:
     include-message: always
@@ -12,22 +11,19 @@ app:
 
 spring:
   datasource:
-    # Prefer SPRING_DATASOURCE_URL if present, otherwise fall back to JawsDB URL
+    # Prefer SPRING_DATASOURCE_URL if present; else fall back to JawsDB URL
+    # IMPORTANT: SPRING_DATASOURCE_URL must be a JDBC URL (jdbc:mysql://...)
     url: ${SPRING_DATASOURCE_URL:${JAWSDB_URL}}
   jpa:
-    show-sql: true
     hibernate:
-      # keep schema managed by Flyway (or by your SQL), not by Hibernate
       ddl-auto: validate
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-
   flyway:
     enabled: true
     baseline-on-migrate: true
-
   security:
     oauth2:
       client: {}  # placeholder while OAuth is unfinished
@@ -37,3 +33,4 @@ management:
     web:
       exposure:
         include: health,info,mappings
+

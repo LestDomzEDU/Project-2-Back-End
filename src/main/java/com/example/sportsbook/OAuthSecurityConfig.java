@@ -6,19 +6,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
- * Loads only if app.oauth.enabled=true AND a ClientRegistrationRepository bean exists.
- * On Heroku we set APP_OAUTH_ENABLED=false, so this whole config will be skipped.
+ * Loads ONLY when:
+ *   - app.oauth.enabled=true  AND
+ *   - a real ClientRegistrationRepository bean exists (i.e., at least one OAuth client is configured)
  */
 @Configuration
 @EnableWebSecurity
@@ -27,41 +25,31 @@ import org.springframework.security.web.SecurityFilterChain;
 public class OAuthSecurityConfig {
 
     @Bean
-    SecurityFilterChain oauthSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain oauthSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/", "/robots.txt", "/health", "/actuator/**",
-                    "/error", "/public/**"
+                    "/robots.txt",
+                    "/actuator/**",
+                    "/",              // adjust to your public endpoints as needed
+                    "/api/public/**"  // adjust to your public endpoints as needed
                 ).permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(Customizer.withDefaults())
-            .oauth2Client(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable()); // adjust if you need CSRF
+            .oauth2Client(Customizer.withDefaults());
+
         return http.build();
     }
 
     @Bean
-    OAuth2AuthorizedClientManager authorizedClientManager(
+    public OAuth2AuthorizedClientManager authorizedClientManager(
             ClientRegistrationRepository clientRegistrationRepository,
             OAuth2AuthorizedClientService authorizedClientService) {
 
-        OAuth2AuthorizedClientProvider provider = OAuth2AuthorizedClientProviderBuilder.builder()
-                .authorizationCode()
-                .refreshToken()
-                .clientCredentials()
-                // .password() // include only if you really use the password grant
-                .build();
-
-        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
-                new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                        clientRegistrationRepository, authorizedClientService);
-
-        manager.setAuthorizedClientProvider(provider);
-        manager.setAuthorizedClientRepository(
-                new AuthenticatedPrincipalOAuth2AuthorizedClientRepository());
-
-        return manager;
+        return new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+            clientRegistrationRepository, authorizedClientService
+        );
     }
 }

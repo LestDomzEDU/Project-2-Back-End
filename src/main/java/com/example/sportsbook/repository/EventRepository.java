@@ -29,12 +29,9 @@ public class EventRepository {
         e.setLeague(rs.getString("league"));
         e.setHomeTeam(rs.getString("home_team"));
         e.setAwayTeam(rs.getString("away_team"));
-
         Timestamp ts = rs.getTimestamp("start_time");
         e.setStartTime(ts != null ? ts.toLocalDateTime() : null);
-
-        e.setStatus(rs.getString("status"));
-        // COALESCE in the SQL ensures non-null, but be defensive anyway
+        e.setStatus(rs.getString("status"));        // alias below gives us 'status'
         String result = rs.getString("result");
         e.setResult(result != null ? result : "");
         return e;
@@ -43,7 +40,8 @@ public class EventRepository {
     /** Return all events ordered by start time. */
     public List<Event> all() {
         final String sql = """
-            SELECT id, league, home_team, away_team, start_time, status,
+            SELECT id, league, home_team, away_team, start_time,
+                   `status` AS status,
                    COALESCE(result, '') AS result
             FROM events
             ORDER BY start_time ASC
@@ -51,10 +49,11 @@ public class EventRepository {
         return jdbc.query(sql, ROW_MAPPER);
     }
 
-    /** Find a single event by id (throws EmptyResultDataAccessException if missing). */
+    /** Find a single event by id. */
     public Event getById(Long id) throws EmptyResultDataAccessException {
         final String sql = """
-            SELECT id, league, home_team, away_team, start_time, status,
+            SELECT id, league, home_team, away_team, start_time,
+                   `status` AS status,
                    COALESCE(result, '') AS result
             FROM events
             WHERE id = ?
@@ -65,7 +64,7 @@ public class EventRepository {
     /** Create an event and return it with the generated id. */
     public Event create(Event e) {
         final String sql = """
-            INSERT INTO events (league, home_team, away_team, start_time, status, result)
+            INSERT INTO events (league, home_team, away_team, start_time, `status`, result)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
 
@@ -76,11 +75,7 @@ public class EventRepository {
             ps.setString(2, e.getHomeTeam());
             ps.setString(3, e.getAwayTeam());
             LocalDateTime st = e.getStartTime();
-            if (st != null) {
-                ps.setTimestamp(4, Timestamp.valueOf(st));
-            } else {
-                ps.setTimestamp(4, null);
-            }
+            ps.setTimestamp(4, st != null ? Timestamp.valueOf(st) : null);
             ps.setString(5, e.getStatus());
             ps.setString(6, e.getResult() == null ? "" : e.getResult());
             return ps;
@@ -92,13 +87,13 @@ public class EventRepository {
         return e;
     }
 
-    /** Update only the result field for an event id. Returns rows affected (0 or 1). */
+    /** Update only the result field for an event id. Returns rows affected. */
     public int updateResult(Long id, String result) {
         final String sql = "UPDATE events SET result = ? WHERE id = ?";
         return jdbc.update(sql, result, id);
     }
 
-    /** Delete by id. Returns rows affected (0 or 1). */
+    /** Delete by id. Returns rows affected. */
     public int delete(Long id) {
         final String sql = "DELETE FROM events WHERE id = ?";
         return jdbc.update(sql, id);

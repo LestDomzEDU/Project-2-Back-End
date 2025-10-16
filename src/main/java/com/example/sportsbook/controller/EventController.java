@@ -2,11 +2,13 @@ package com.example.sportsbook.controller;
 
 import com.example.sportsbook.model.Event;
 import com.example.sportsbook.repository.EventRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/events")
@@ -18,41 +20,36 @@ public class EventController {
         this.eventRepository = eventRepository;
     }
 
-    // GET /api/events
     @GetMapping
-    public List<Event> getAll() {
-        // NOTE: repository method is `all()`, not `findAll()`
+    public List<Event> all() {
         return eventRepository.all();
     }
 
-    // GET /api/events/{id}
     @GetMapping("/{id}")
-    public Event getOne(@PathVariable long id) {
-        return eventRepository.getById(id);
-    }
-
-    // POST /api/events
-    @PostMapping
-    public ResponseEntity<Void> create(@RequestBody Event event) {
-        int rows = eventRepository.create(event);
-        if (rows == 1) {
-            // You can adjust the URI format depending on how IDs are generated
-            return ResponseEntity.created(URI.create("/api/events")).build();
+    public ResponseEntity<Event> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(eventRepository.getById(id));
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.badRequest().build();
     }
 
-    // PATCH /api/events/{id}/result
+    @PostMapping
+    public ResponseEntity<Event> create(@RequestBody Event e) {
+        Event saved = eventRepository.create(e);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
     @PatchMapping("/{id}/result")
-    public ResponseEntity<Void> updateResult(@PathVariable long id, @RequestBody String result) {
-        int rows = eventRepository.updateResult(id, result);
-        return rows == 1 ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> updateResult(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String result = body.getOrDefault("result", "");
+        int updated = eventRepository.updateResult(id, result);
+        return (updated > 0) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    // DELETE /api/events/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        int rows = eventRepository.delete(id);
-        return rows == 1 ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        int deleted = eventRepository.delete(id);
+        return (deleted > 0) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

@@ -1,39 +1,32 @@
 package com.example.sportsbook.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
-public class CreateBetRequest {
+/**
+ * JSON body for POST /api/bets:
+ * {
+ *   "eventId": 1,
+ *   "amount": 50.00,
+ *   "selection": "HOME",
+ *   "odds": 110
+ * }
+ */
+public record CreateBetRequest(
+        @NotNull(message = "eventId is required")
+        Long eventId,
 
-    @NotNull
-    private Long eventId;
+        @NotNull(message = "amount is required")
+        @Positive(message = "amount must be positive")
+        BigDecimal amount,
 
-    @NotNull
-    private Long userId;
+        @NotBlank(message = "selection is required")
+        @Pattern(regexp = "HOME|AWAY", message = "selection must be either 'HOME' or 'AWAY'")
+        String selection,
 
-    @NotNull
-    @DecimalMin(value = "1.00", message = "amount must be >= 1.00")
-    private BigDecimal amount;
-
-    @NotBlank
-    private String selection; // e.g., "Warriors" OR "HOME"/"AWAY" if you prefer—controller won't restrict it
-
-    @NotBlank
-    @Pattern(regexp = "^[+-]?\\d+$", message = "odds must look like +110 or -150")
-    private String odds;
-
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
-
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
-
-    public String getSelection() { return selection; }
-    public void setSelection(String selection) { this.selection = selection; }
-
-    public String getOdds() { return odds; }
-    public void setOdds(String odds) { this.odds = odds; }
-}
+        @NotNull(message = "odds is required")
+        Integer odds
+) {}

@@ -1,58 +1,68 @@
 package com.example.sportsbook.controller;
 
 import com.example.sportsbook.dto.CreateBetRequest;
-import com.example.sportsbook.model.Bet;
-import com.example.sportsbook.repository.BetRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/bets")
 public class BetController {
 
-    private final BetRepository betRepository;
+    private final JdbcTemplate jdbc;
 
-    public BetController(BetRepository betRepository) {
-        this.betRepository = betRepository;
+    public BetController(JdbcTemplate jdbc) {
+        this.jdbc = jdbc;
     }
 
     @GetMapping
-    public List<Bet> all() {
-        return betRepository.findAll();
+    public List<Map<String, Object>> all() {
+        return jdbc.queryForList(
+                "SELECT id, event_id AS eventId, amount, selection, odds, status " +
+                "FROM bets ORDER BY id DESC"
+        );
     }
 
     @PostMapping
-    public ResponseEntity<Bet> create(@Valid @RequestBody CreateBetRequest req) {
-        Bet toSave = new Bet();
-        toSave.setEventId(req.getEventId());
-        toSave.setUserId(req.getUserId());
-        toSave.setAmount(req.getAmount());
-        toSave.setSelection(req.getSelection());
-        toSave.setOdds(req.getOdds());
-        toSave.setResult("pending"); // always pending on create
+    public ResponseEntity<?> create(@Valid @RequestBody CreateBetRequest req, BindingResult br) {
 
-        Bet saved = betRepository.create(toSave);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
+        if (br.hasErrors()) {
+            var details = br.getFieldErrors()
+                    .stream()
+                    .map(fe -> Map.of("field", fe.getField(), "message", fe.getDefaultMessage()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(Map.of(
+                    "ok", false,
+                    "error", "Validation failed",
+                    "details", details
+            ));
+        }
 
-    @GetMapping("/{id}")
-    public Bet get(@PathVariable Long id) {
-        return betRepository.getById(id);
-    }
+        int updated = jdbc.update(
+                "INSERT INTO bets (event_id, amount, selection, odds, status) VALUES (?, ?, ?, ?, ?)",
+                req.eventId(), req.amount(), req.selection(), req.odds(), "PENDING"
+        );
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        int n = betRepository.delete(id);
-        return n > 0 ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }
-
-    @PatchMapping("/{id}/result")
-    public ResponseEntity<Void> updateResult(@PathVariable Long id, @RequestBody String result) {
-        int n = betRepository.updateResult(id, result);
-        return n > 0 ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        if (updated == 1) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    Map.of(
+                            "ok", true,
+                            "message", "Bet created",
+                            "eventId", req.eventId(),
+                            "selection", req.selection(),
+                            "odds", req.odds(),
+                            "amount", req.amount()
+                    )
+            );
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("ok", false, "message", "Insert failed"));
     }
 }

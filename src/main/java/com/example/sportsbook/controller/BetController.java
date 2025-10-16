@@ -8,13 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/bets")
 public class BetController {
 
     private final BetRepository betRepository;
 
-    // No Lombok; plain constructor
     public BetController(BetRepository betRepository) {
         this.betRepository = betRepository;
     }
@@ -26,13 +27,18 @@ public class BetController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CreateBetRequest req) {
-        // call the new overload that takes the four fields
-        Bet created = betRepository.create(
-                req.eventId(),
-                req.amount(),
-                req.selection(),
-                req.odds()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        // In a real app, userId would come from auth; for now hard-code to 100L.
+        Bet bet = new Bet();
+        bet.setEventId(req.eventId());
+        bet.setUserId(100L);
+        bet.setAmount(req.amount());
+        bet.setSelection(req.selection());
+        bet.setOdds(req.odds());
+        bet.setStatus("pending");
+        bet.setResult("");
+        bet.setCreatedAt(LocalDateTime.now());
+
+        betRepository.create(bet);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

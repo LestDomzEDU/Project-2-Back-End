@@ -1,31 +1,36 @@
 package com.example.sportsbook.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 public class Bet {
     private Long id;
     private Long eventId;
     private Long userId;
-    private java.math.BigDecimal amount;
-    private String selection;
-    private String odds;
-    private String result;
-    private java.time.LocalDateTime createdAt;
+    private BigDecimal amount;
+    private String selection;   // "HOME" or "AWAY"
+    private Integer odds;       // e.g., 110, -150
+    private String status;      // "pending" or "settled"
+    private String result;      // "", "HOME", or "AWAY"
+    private LocalDateTime createdAt;
 
-    public Bet() {}
+    public Bet() { }
 
-    public Bet(Long id, Long eventId, Long userId,
-               java.math.BigDecimal amount, String selection, String odds,
-               String result, java.time.LocalDateTime createdAt) {
+    public Bet(Long id, Long eventId, Long userId, BigDecimal amount,
+               String selection, Integer odds, String status, String result,
+               LocalDateTime createdAt) {
         this.id = id;
         this.eventId = eventId;
         this.userId = userId;
         this.amount = amount;
         this.selection = selection;
         this.odds = odds;
+        this.status = status;
         this.result = result;
         this.createdAt = createdAt;
     }
 
-    // getters/setters
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -35,18 +40,21 @@ public class Bet {
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public java.math.BigDecimal getAmount() { return amount; }
-    public void setAmount(java.math.BigDecimal amount) { this.amount = amount; }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
     public String getSelection() { return selection; }
     public void setSelection(String selection) { this.selection = selection; }
 
-    public String getOdds() { return odds; }
-    public void setOdds(String odds) { this.odds = odds; }
+    public Integer getOdds() { return odds; }
+    public void setOdds(Integer odds) { this.odds = odds; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public String getResult() { return result; }
     public void setResult(String result) { this.result = result; }
 
-    public java.time.LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

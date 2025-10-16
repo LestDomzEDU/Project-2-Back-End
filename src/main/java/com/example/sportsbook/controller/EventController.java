@@ -1,53 +1,55 @@
 package com.example.sportsbook.controller;
 
+import com.example.sportsbook.model.Event;
+import com.example.sportsbook.repository.EventRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/events")
 public class EventController {
-  private final JdbcTemplate jdbc;
-  public EventController(JdbcTemplate jdbc){ this.jdbc = jdbc; }
 
-  @GetMapping("/events")
-  public List<Map<String,Object>> listEvents(){
-    return jdbc.queryForList("""
-      SELECT id, league, home_team, away_team, start_time, status, COALESCE(result,'') AS result
-      FROM events ORDER BY start_time ASC
-    """);
-  }
+    private final EventRepository eventRepository;
 
-  @GetMapping("/events/{id}")
-  public Map<String,Object> getEvent(@PathVariable long id){
-    Map<String,Object> event = jdbc.queryForMap("""
-      SELECT id, league, home_team, away_team, start_time, status, COALESCE(result,'') AS result
-      FROM events WHERE id = ?
-    """, id);
+    public EventController(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
 
-    List<Map<String,Object>> odds = jdbc.queryForList("""
-      SELECT o.id, o.selection, o.american, o.decimal
-      FROM markets m JOIN odds o ON o.market_id = m.id
-      WHERE m.event_id = ? AND m.type = 'MONEYLINE'
-      ORDER BY o.selection
-    """, id);
-    event.put("odds", odds);
-    return event;
-  }
+    @GetMapping
+    public List<Event> all() {
+        return eventRepository.all();
+    }
 
-  @GetMapping("/events/{id}/odds")
-  public List<Map<String,Object>> getEventOdds(@PathVariable long id){
-    return jdbc.queryForList("""
-      SELECT o.id, o.selection, o.american, o.decimal
-      FROM markets m JOIN odds o ON o.market_id = m.id
-      WHERE m.event_id = ? AND m.type = 'MONEYLINE'
-      ORDER BY o.selection
-    """, id);
-  }
+    @GetMapping("/{id}")
+    public ResponseEntity<Event> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(eventRepository.getById(id));
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<Event> create(@RequestBody Event e) {
+        Event saved = eventRepository.create(e);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PatchMapping("/{id}/result")
+    public ResponseEntity<Void> updateResult(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String result = body.getOrDefault("result", "");
+        int updated = eventRepository.updateResult(id, result);
+        return (updated > 0) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        int deleted = eventRepository.delete(id);
+        return (deleted > 0) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }

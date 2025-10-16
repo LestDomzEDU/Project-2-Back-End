@@ -1,23 +1,25 @@
 package com.example.sportsbook.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
+public class CorsConfig {
+  @Bean
+  public CorsFilter corsFilter() {
+    var conf = new CorsConfiguration();
+    conf.setAllowedOrigins(List.of(System.getenv().getOrDefault("FRONTEND_URL","http://localhost:5173")));
+    conf.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    conf.setAllowedHeaders(List.of("*"));
+    conf.setAllowCredentials(true);
 
-  @Value("${cors.allowed-origins:}")
-  private String[] allowedOrigins;
-
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**")
-      .allowedOriginPatterns(allowedOrigins != null && allowedOrigins.length > 0 ? allowedOrigins : new String[]{"http://localhost:3000"})
-      .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
-      .allowedHeaders("*")
-      .allowCredentials(true)
-      .maxAge(3600);
+    var source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", conf);
+    return new CorsFilter(source);
   }
 }

@@ -3,7 +3,6 @@ com\example\sportsbook\controller\EventAdminController$CreateEventRequest.class
 com\example\sportsbook\controller\UserController.class
 com\example\sportsbook\repository\EventRepository.class
 com\example\sportsbook\model\Event.class
-com\example\sportsbook\bets\dto\CreateBetRequest.class
 com\example\sportsbook\config\SchemaInit.class
 com\example\sportsbook\controller\EventAdminController$ResultRequest.class
 com\example\sportsbook\repository\BetRepository.class
@@ -13,14 +12,11 @@ com\example\sportsbook\controller\BetController.class
 com\example\sportsbook\SportsbookApplication.class
 com\example\sportsbook\config\GlobalExceptionHandler.class
 com\example\sportsbook\controller\EventAdminController.class
-com\example\sportsbook\bets\Selection.class
 com\example\sportsbook\OAuthSecurityConfig.class
 com\example\sportsbook\model\Bet.class
-com\example\sportsbook\bets\BetStatus.class
 com\example\sportsbook\controller\ValidationAdvice.class
 com\example\sportsbook\service\BetService.class
 com\example\sportsbook\config\FlywayRepairConfig.class
 com\example\sportsbook\controller\HealthController.class
-com\example\sportsbook\bets\dto\UpdateBetStatusRequest.class
 com\example\sportsbook\config\CorsConfig.class
 com\example\sportsbook\dto\CreateBetRequest.class

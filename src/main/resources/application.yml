@@ -1,9 +1,9 @@
 server:
-  port: 8080
+  # Heroku provides PORT; default to 8080 locally
+  port: ${PORT:8080}
   error:
     include-message: always
-server.error.include-message=always
-server.error.include-binding-errors=always
+    include-binding-errors: always
 
 app:
   oauth:
@@ -12,32 +12,28 @@ app:
 
 spring:
   datasource:
-    # Local default (Docker or local MariaDB). Override with env vars on Heroku.
-    url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/sportsbook}
-    username: ${SPRING_DATASOURCE_USERNAME:sb}
-    password: ${SPRING_DATASOURCE_PASSWORD:sbpw}
-    driver-class-name: org.mariadb.jdbc.Driver
-
+    # Prefer SPRING_DATASOURCE_URL if present, otherwise fall back to JawsDB URL
+    url: ${SPRING_DATASOURCE_URL:${JAWSDB_URL}}
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: none        # keep 'update' while developing; switch to 'none' if you turn Flyway on
-    open-in-view: false
+      # keep schema managed by Flyway (or by your SQL), not by Hibernate
+      ddl-auto: validate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDBDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
 
   flyway:
-    enabled: true      # leave OFF for now to avoid conflicts with ddl-auto
+    enabled: true
     baseline-on-migrate: true
 
   security:
     oauth2:
-      client: {}              # keep valid but empty while OAuth is unfinished
+      client: {}  # placeholder while OAuth is unfinished
 
 management:
   endpoints:
     web:
       exposure:
-        include: "health,info,mappings"
-
+        include: health,info,mappings

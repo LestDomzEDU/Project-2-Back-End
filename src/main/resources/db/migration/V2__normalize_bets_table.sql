@@ -1,3 +1,4 @@
+-- V4__normalize_bets_table.sql
 CREATE TABLE IF NOT EXISTS bets (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   event_id BIGINT NOT NULL,

@@ -1,18 +1,19 @@
 package com.example.sportsbook.config;
 
 import org.flywaydb.core.Flyway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
 
-/**
- * Repairs Flyway metadata on startup (safe no-op if nothing to repair).
- */
+@Component
 public class FlywayRepairRunner implements ApplicationRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(FlywayRepairRunner.class);
     private final Flyway flyway;
+
+    // control with env var: FLYWAY_REPAIR_ON_START=true to run in Heroku when needed
+    @Value("${FLYWAY_REPAIR_ON_START:false}")
+    private boolean repairOnStart;
 
     public FlywayRepairRunner(Flyway flyway) {
         this.flyway = flyway;
@@ -20,13 +21,8 @@ public class FlywayRepairRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        try {
-            log.info("Running Flyway repair (if needed)...");
+        if (repairOnStart) {
             flyway.repair();
-            log.info("Flyway repair complete.");
-        } catch (Exception ex) {
-            // Don’t fail the app if repair isn’t needed or DB is clean
-            log.warn("Flyway repair skipped/failed (non-fatal): {}", ex.getMessage());
         }
     }
 }

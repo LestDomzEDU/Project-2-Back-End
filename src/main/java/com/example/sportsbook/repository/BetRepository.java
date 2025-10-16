@@ -3,11 +3,12 @@ package com.example.sportsbook.repository;
 import com.example.sportsbook.model.Bet;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.sql.*;
 import java.util.List;
 
 @Repository
@@ -19,70 +20,49 @@ public class BetRepository {
         this.jdbc = jdbc;
     }
 
-    private static class BetRowMapper implements RowMapper<Bet> {
-        @Override
-        public Bet mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Bet(
-                rs.getLong("id"),
-                rs.getLong("event_id"),
-                rs.getLong("user_id"),
-                rs.getBigDecimal("amount"),
-                rs.getString("selection"),
-                rs.getString("odds"),
-                rs.getString("result"),
-                rs.getTimestamp("created_at") != null
-                    ? rs.getTimestamp("created_at").toLocalDateTime()
-                    : null
-            );
-        }
+    private static final RowMapper<Bet> ROW_MAPPER = (rs, rowNum) -> map(rs);
+
+    private static Bet map(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("id");
+        Long eventId = rs.getLong("event_id");
+        BigDecimal amount = rs.getBigDecimal("amount");
+        String selection = rs.getString("selection");
+        Integer odds = rs.getInt("odds");
+        // Most schemas don’t need status here; if you added one, you can read it similarly.
+        return new Bet(id, eventId, amount, selection, odds);
     }
 
     public List<Bet> findAll() {
-        String sql = """
-            SELECT id, event_id, user_id, amount, selection, odds, result, created_at
-            FROM bets
-            ORDER BY created_at DESC
-        """;
-        return jdbc.query(sql, new BetRowMapper());
+        // minimal column list that matches constructor order in Bet
+        String sql = "SELECT id, event_id, amount, selection, odds FROM bets ORDER BY id DESC";
+        return jdbc.query(sql, ROW_MAPPER);
     }
 
-    public Bet create(Bet bet) {
-        String sql = """
-            INSERT INTO bets (event_id, user_id, amount, selection, odds, result)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """;
-        jdbc.update(sql,
-            bet.getEventId(),
-            bet.getUserId(),
-            bet.getAmount(),
-            bet.getSelection(),
-            bet.getOdds(),
-            bet.getResult() == null ? "pending" : bet.getResult()
+    /** Existing method (keep, if you already had it)
+    public Bet create(Bet bet) { ... }
+    */
+
+    // ******** NEW OVERLOAD that matches the controller call ********
+    public Bet create(Long eventId, BigDecimal amount, String selection, Integer odds) {
+        String sql = "INSERT INTO bets(event_id, amount, selection, odds) VALUES (?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbc.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, eventId);
+            ps.setBigDecimal(2, amount);
+            ps.setString(3, selection);
+            ps.setInt(4, odds);
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey() != null ? ((Number) keyHolder.getKey()).longValue() : null;
+
+        // Read back the row to return a fully mapped Bet
+        return jdbc.queryForObject(
+                "SELECT id, event_id, amount, selection, odds FROM bets WHERE id = ?",
+                ROW_MAPPER,
+                id
         );
-
-        // return last inserted row
-        String fetch = """
-            SELECT id, event_id, user_id, amount, selection, odds, result, created_at
-            FROM bets
-            ORDER BY id DESC
-            LIMIT 1
-        """;
-        return jdbc.queryForObject(fetch, new BetRowMapper());
-    }
-
-    public Bet getById(Long id) {
-        String sql = """
-            SELECT id, event_id, user_id, amount, selection, odds, result, created_at
-            FROM bets WHERE id = ?
-        """;
-        return jdbc.queryForObject(sql, new BetRowMapper(), id);
-    }
-
-    public int delete(Long id) {
-        return jdbc.update("DELETE FROM bets WHERE id = ?", id);
-    }
-
-    public int updateResult(Long id, String result) {
-        return jdbc.update("UPDATE bets SET result = ? WHERE id = ?", result, id);
     }
 }

@@ -1,4 +1,3 @@
-com\example\sportsbook\controller\EventController$1.class
 com\example\sportsbook\NoAuthSecurityConfig.class
 com\example\sportsbook\controller\ApiErrorHandler.class
 com\example\sportsbook\controller\EventController.class
@@ -9,10 +8,11 @@ com\example\sportsbook\controller\EventAdminController.class
 com\example\sportsbook\controller\UserController.class
 com\example\sportsbook\bets\Selection.class
 com\example\sportsbook\OAuthSecurityConfig.class
+com\example\sportsbook\repository\EventRepository.class
+com\example\sportsbook\model\Event.class
 com\example\sportsbook\bets\BetService.class
 com\example\sportsbook\bets\BetStatus.class
 com\example\sportsbook\config\FlywayRepairConfig.class
-com\example\sportsbook\controller\EventController$EventDto.class
 com\example\sportsbook\controller\HealthController.class
 com\example\sportsbook\bets\dto\CreateBetRequest.class
 com\example\sportsbook\bets\BetRepository.class

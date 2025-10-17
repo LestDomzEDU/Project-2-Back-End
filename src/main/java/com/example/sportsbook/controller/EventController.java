@@ -34,7 +34,7 @@ public class EventController {
     """, id);
 
     List<Map<String,Object>> odds = jdbc.queryForList("""
-      SELECT o.id, o.selection, o.american, o.decimal
+      SELECT o.id, o.selection, o.american, o.`decimal` AS decimal
       FROM markets m JOIN odds o ON o.market_id = m.id
       WHERE m.event_id = ? AND m.type = 'MONEYLINE'
       ORDER BY o.selection
@@ -47,7 +47,7 @@ public class EventController {
   @GetMapping("/events/{id}/odds")
   public List<Map<String,Object>> getEventOdds(@PathVariable long id) {
     return jdbc.queryForList("""
-      SELECT o.id, o.selection, o.american, o.decimal
+      SELECT o.id, o.selection, o.american, o.`decimal` AS decimal
       FROM markets m JOIN odds o ON o.market_id = m.id
       WHERE m.event_id = ? AND m.type = 'MONEYLINE'
       ORDER BY o.selection

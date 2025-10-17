@@ -1,9 +1,7 @@
-com\example\sportsbook\controller\EventAdminController$CreateEventRequest.class
 com\example\sportsbook\bets\Bet.class
 com\example\sportsbook\controller\UserController.class
 com\example\sportsbook\health\HealthController.class
 com\example\sportsbook\controller\BetRequest.class
-com\example\sportsbook\controller\EventAdminController$ResultRequest.class
 com\example\sportsbook\controller\ApiErrorHandler.class
 com\example\sportsbook\controller\EventController.class
 com\example\sportsbook\config\CorsConfig$1.class

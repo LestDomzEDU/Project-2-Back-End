@@ -10,20 +10,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bets")
-@CrossOrigin // adjust for your frontend origin later
+@CrossOrigin // adjust to your frontend origin(s) later
 public class BetController {
   private final BetService service;
+
   public BetController(BetService service) { this.service = service; }
 
   @GetMapping
-  public List<Bet> list() { return service.listAll(); }
+  public List<Bet> list() { return service.list(); }
 
   @GetMapping("/{id}")
   public Bet get(@PathVariable Long id) { return service.get(id); }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Bet create(@Valid @RequestBody BetCreateRequest req) { return service.create(req); }
+  public Bet create(@Valid @RequestBody BetCreateRequest req) {
+    return service.create(req);
+  }
 
   @PutMapping("/{id}")
   public Bet update(@PathVariable Long id, @Valid @RequestBody BetUpdateRequest req) {
@@ -32,7 +35,9 @@ public class BetController {
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void cancelOrDelete(@PathVariable Long id) { service.delete(id); }
+  public void cancelOrDelete(@PathVariable Long id) {
+    service.delete(id);
+  }
 
   @PostMapping("/{id}/settle")
   public Bet settle(@PathVariable Long id, @Valid @RequestBody BetSettleRequest req) {

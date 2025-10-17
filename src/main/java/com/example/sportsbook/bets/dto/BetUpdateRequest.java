@@ -1,5 +1,6 @@
 // src/main/java/com/example/sportsbook/bets/dto/BetUpdateRequest.java
 package com.example.sportsbook.bets.dto;
+
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 

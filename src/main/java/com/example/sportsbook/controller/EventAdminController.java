@@ -1,66 +1,46 @@
 package com.example.sportsbook.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @CrossOrigin(origins = "*")
 public class EventAdminController {
   private final JdbcTemplate jdbc;
-  public EventAdminController(JdbcTemplate jdbc){ this.jdbc = jdbc; }
 
-  record CreateEventRequest(String league, String homeTeam, String awayTeam, String startTimeIso) {}
-
-  @PostMapping("/events")
-  @ResponseStatus(HttpStatus.CREATED)
-  public Map<String,Object> createEvent(@RequestBody CreateEventRequest req){
-    long eventId = jdbc.queryForObject(
-      "INSERT INTO events (league, home_team, away_team, start_time) VALUES (?,?,?,CAST(? AS TIMESTAMPTZ)) RETURNING id",
-      Long.class, req.league(), req.homeTeam(), req.awayTeam(), req.startTimeIso()
-    );
-    long marketId = jdbc.queryForObject(
-      "INSERT INTO markets (event_id, type) VALUES (?, 'MONEYLINE') RETURNING id",
-      Long.class, eventId
-    );
-    jdbc.update("INSERT INTO odds (market_id, selection, american, decimal) VALUES (?,?,?,?)",
-      marketId, "HOME", -110, 1.91);
-    jdbc.update("INSERT INTO odds (market_id, selection, american, decimal) VALUES (?,?,?,?)",
-      marketId, "AWAY", -110, 1.91);
-
-    Map<String,Object> out = new HashMap<>();
-    out.put("id", eventId);
-    return out;
+  public EventAdminController(JdbcTemplate jdbc) {
+    this.jdbc = jdbc;
   }
 
-  record ResultRequest(String result) {}
-
-  @PutMapping("/events/{id}/result")
-  public Map<String,Object> setResult(@PathVariable long id, @RequestBody ResultRequest req){
-    String result = req.result();
-    if (!"HOME".equalsIgnoreCase(result) && !"AWAY".equalsIgnoreCase(result)){
-      throw new IllegalArgumentException("result must be HOME or AWAY");
+  @PostMapping("/events/{id}/result/{result}")
+  @ResponseStatus(HttpStatus.OK)
+  public Map<String,Object> setEventResult(@PathVariable long id, @PathVariable String result) {
+    String normalized = result.toUpperCase();
+    if (!normalized.equals("HOME") && !normalized.equals("AWAY")) {
+      throw new IllegalArgumentException("Result must be HOME or AWAY");
     }
-    jdbc.update("UPDATE events SET result = ?, status = 'FINISHED' WHERE id = ?", result.toUpperCase(), id);
 
-    // settle bets
-    int won = jdbc.update("UPDATE bets SET state='WON', settled_at=NOW() WHERE event_id=? AND selection = ?", id, result.toUpperCase());
-    int lost = jdbc.update("UPDATE bets SET state='LOST', settled_at=NOW() WHERE event_id=? AND selection <> ?", id, result.toUpperCase());
+    // set event result & mark finished
+    jdbc.update("UPDATE events SET result = ?, status = 'FINISHED' WHERE id = ?", normalized, id);
+
+    // settle bets: selection = result -> WON, others -> LOST
+    int won = jdbc.update(
+      "UPDATE bets SET status='WON' WHERE event_id=? AND UPPER(selection)=?",
+      id, normalized
+    );
+    int lost = jdbc.update(
+      "UPDATE bets SET status='LOST' WHERE event_id=? AND UPPER(selection)<>?",
+      id, normalized
+    );
 
     Map<String,Object> out = new HashMap<>();
     out.put("eventId", id);
-    out.put("result", result.toUpperCase());
+    out.put("result", normalized);
     out.put("betsWon", won);
     out.put("betsLost", lost);
     return out;

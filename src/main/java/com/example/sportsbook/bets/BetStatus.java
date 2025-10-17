@@ -5,5 +5,6 @@ public enum BetStatus {
   PENDING,
   WON,
   LOST,
+  VOID,
   CANCELED
 }

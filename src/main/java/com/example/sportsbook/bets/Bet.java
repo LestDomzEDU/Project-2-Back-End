@@ -1,4 +1,3 @@
-// src/main/java/com/example/sportsbook/bets/Bet.java
 package com.example.sportsbook.bets;
 
 import jakarta.persistence.*;
@@ -21,8 +20,8 @@ public class Bet {
   private Long userId;
 
   @NotBlank
-  @Column(nullable = false, length = 120)
-  private String selection; // 'HOME' or 'AWAY'
+  @Size(max = 120)
+  private String selection; // HOME / AWAY
 
   @NotNull
   @DecimalMin("1.01")
@@ -38,26 +37,21 @@ public class Bet {
   private String bettorRef;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 32)
+  @Column(nullable = false)
   private BetStatus status = BetStatus.PENDING;
 
-  @Column(name = "created_at", updatable = false)
+  @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
   @Column(name = "updated_at")
   private Instant updatedAt;
 
   @PrePersist
-  public void onCreate() {
-    this.createdAt = Instant.now();
-  }
+  void onCreate() { this.createdAt = Instant.now(); }
 
   @PreUpdate
-  public void onUpdate() {
-    this.updatedAt = Instant.now();
-  }
+  void onUpdate() { this.updatedAt = Instant.now(); }
 
-  // getters/setters
   public Long getId() { return id; }
   public Long getEventId() { return eventId; }
   public void setEventId(Long eventId) { this.eventId = eventId; }
@@ -65,10 +59,10 @@ public class Bet {
   public void setUserId(Long userId) { this.userId = userId; }
   public String getSelection() { return selection; }
   public void setSelection(String selection) { this.selection = selection; }
-  public BigDecimal getOddsDecimal() { return oddsDecimal; }
-  public void setOddsDecimal(BigDecimal oddsDecimal) { this.oddsDecimal = oddsDecimal; }
-  public BigDecimal getStake() { return stake; }
-  public void setStake(BigDecimal stake) { this.stake = stake; }
+  public java.math.BigDecimal getOddsDecimal() { return oddsDecimal; }
+  public void setOddsDecimal(java.math.BigDecimal oddsDecimal) { this.oddsDecimal = oddsDecimal; }
+  public java.math.BigDecimal getStake() { return stake; }
+  public void setStake(java.math.BigDecimal stake) { this.stake = stake; }
   public String getBettorRef() { return bettorRef; }
   public void setBettorRef(String bettorRef) { this.bettorRef = bettorRef; }
   public BetStatus getStatus() { return status; }

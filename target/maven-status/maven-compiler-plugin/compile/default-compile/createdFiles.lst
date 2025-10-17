@@ -1,5 +1,6 @@
 com\example\sportsbook\bets\Bet.class
 com\example\sportsbook\controller\UserController.class
+com\example\sportsbook\bets\dto\BetSettleRequest$Result.class
 com\example\sportsbook\health\HealthController.class
 com\example\sportsbook\controller\BetRequest.class
 com\example\sportsbook\controller\ApiErrorHandler.class

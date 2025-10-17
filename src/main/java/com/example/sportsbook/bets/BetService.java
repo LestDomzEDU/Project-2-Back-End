@@ -10,14 +10,16 @@ import java.util.List;
 @Service
 public class BetService {
   private final BetRepository repo;
-
   public BetService(BetRepository repo) { this.repo = repo; }
 
   @Transactional(readOnly = true)
-  public List<Bet> list() { return repo.findAll(); }
+  public List<Bet> listAll() { return repo.findAll(); }
 
   @Transactional(readOnly = true)
-  public Bet get(Long id) { return repo.findById(id).orElseThrow(); }
+  public List<Bet> listByEvent(Long eventId) { return repo.findByEventId(eventId); }
+
+  @Transactional(readOnly = true)
+  public List<Bet> listByUser(Long userId) { return repo.findByUserId(userId); }
 
   @Transactional
   public Bet create(BetCreateRequest req) {
@@ -34,25 +36,19 @@ public class BetService {
 
   @Transactional
   public Bet update(Long id, BetUpdateRequest req) {
-    Bet b = repo.findById(id).orElseThrow();
+    Bet b = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Bet not found"));
     if (b.getStatus() != BetStatus.PENDING) {
-      throw new IllegalStateException("Only PENDING bets can be updated.");
+      throw new IllegalArgumentException("Only PENDING bets can be updated");
     }
-    if (req.selection() != null && !req.selection().isBlank()) {
-      b.setSelection(req.selection().toUpperCase());
-    }
-    if (req.oddsDecimal() != null) {
-      b.setOddsDecimal(req.oddsDecimal());
-    }
-    if (req.stake() != null) {
-      b.setStake(req.stake());
-    }
+    if (req.selection() != null) b.setSelection(req.selection().toUpperCase());
+    if (req.oddsDecimal() != null) b.setOddsDecimal(req.oddsDecimal());
+    if (req.stake() != null) b.setStake(req.stake());
     return repo.save(b);
   }
 
   @Transactional
   public void delete(Long id) {
-    Bet b = repo.findById(id).orElseThrow();
+    Bet b = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Bet not found"));
     if (b.getStatus() == BetStatus.PENDING) {
       b.setStatus(BetStatus.CANCELED);
       repo.save(b);
@@ -63,9 +59,9 @@ public class BetService {
 
   @Transactional
   public Bet settle(Long id, BetSettleRequest req) {
-    Bet b = repo.findById(id).orElseThrow();
+    Bet b = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Bet not found"));
     if (b.getStatus() != BetStatus.PENDING) {
-      throw new IllegalStateException("Only PENDING bets can be settled.");
+      throw new IllegalArgumentException("Only PENDING bets can be settled");
     }
     switch (req.result()) {
       case WON -> b.setStatus(BetStatus.WON);

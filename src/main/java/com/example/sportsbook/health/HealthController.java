@@ -1,4 +1,3 @@
-// src/main/java/com/example/sportsbook/health/HealthController.java
 package com.example.sportsbook.health;
 
 import org.springframework.web.bind.annotation.GetMapping;

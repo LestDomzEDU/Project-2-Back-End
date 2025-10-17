@@ -2,7 +2,6 @@ package com.example.sportsbook.controller;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +10,7 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class EventController {
   private final JdbcTemplate jdbc;
-
-  public EventController(JdbcTemplate jdbc) {
-    this.jdbc = jdbc;
-  }
+  public EventController(JdbcTemplate jdbc) { this.jdbc = jdbc; }
 
   @GetMapping("/events")
   public List<Map<String,Object>> listEvents() {

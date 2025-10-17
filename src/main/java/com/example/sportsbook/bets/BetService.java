@@ -1,9 +1,9 @@
-// src/main/java/com/example/sportsbook/bets/BetService.java
 package com.example.sportsbook.bets;
 
 import com.example.sportsbook.bets.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -45,11 +45,10 @@ public class BetService {
       b.setStatus(BetStatus.CANCELED);
       repo.save(b);
     } else {
-      repo.delete(b); // or forbid; your call
+      repo.delete(b);
     }
   }
 
-  // Settlement: sets result (WON/LOST/VOID) and marks SETTLED when not VOID?
   @Transactional
   public Bet settle(Long id, BetSettleRequest req) {
     Bet b = get(id);
@@ -64,9 +63,7 @@ public class BetService {
     return repo.save(b);
   }
 
-  /** Helper if you want to compute payout client/server-side */
   public BigDecimal potentialPayout(BigDecimal stake, BigDecimal decimalOdds) {
-    // payout = stake * decimalOdds
     return stake.multiply(decimalOdds);
   }
 }

@@ -1,12 +1,17 @@
 package com.example.sportsbook.bets;
-import jakarta.persistence.*; import jakarta.validation.constraints.*; import java.math.BigDecimal; import java.time.Instant;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
+import java.time.Instant;
+
 @Entity @Table(name="bets")
 public class Bet {
-  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
   @NotNull @Column(name="event_id", nullable=false) private Long eventId;
   @Column(name="user_id") private Long userId;
-  @NotBlank @Size(max=120) private String selection;
-  @NotNull @DecimalMin("1.01") @Column(name="odds_decimal", precision=8, scale=4, nullable=false) private BigDecimal oddsDecimal;
+  @NotBlank @Column(length=120) private String selection;
+  @NotNull @DecimalMin("1.01") @Column(name="odds_decimal", precision=8, scale=2, nullable=false) private BigDecimal oddsDecimal;
   @NotNull @DecimalMin("0.01") @Column(precision=10, scale=2, nullable=false) private BigDecimal stake;
   @Column(name="bettor_ref") private String bettorRef;
   @Enumerated(EnumType.STRING) @Column(nullable=false) private BetStatus status = BetStatus.PENDING;

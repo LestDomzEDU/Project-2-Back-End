@@ -11,6 +11,7 @@ com\example\sportsbook\controller\EventAdminController.class
 com\example\sportsbook\bets\BetService.class
 com\example\sportsbook\bets\BetStatus.class
 com\example\sportsbook\bets\dto\BetCreateRequest.class
+com\example\sportsbook\config\FlywayRepairConfig.class
 com\example\sportsbook\bets\BetRepository.class
 com\example\sportsbook\bets\dto\BetUpdateRequest.class
 com\example\sportsbook\config\CorsConfig.class

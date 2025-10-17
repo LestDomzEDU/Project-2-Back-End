@@ -23,7 +23,7 @@ public class EventController {
               + "FROM events WHERE id = ?";
     Map<String,Object> event = jdbc.queryForMap(ev, id);
 
-    String odds = "SELECT o.id, o.selection, o.american, o.`decimal` AS decimal "
+    String odds = "SELECT o.id, o.selection, o.american, COALESCE(o.odds_decimal, o.`decimal`) AS decimal "
                 + "FROM markets m JOIN odds o ON o.market_id = m.id "
                 + "WHERE m.event_id = ? AND m.type = 'MONEYLINE' "
                 + "ORDER BY o.selection";
@@ -35,7 +35,7 @@ public class EventController {
 
   @GetMapping("/events/{id}/odds")
   public List<Map<String,Object>> getEventOdds(@PathVariable long id) {
-    String odds = "SELECT o.id, o.selection, o.american, o.`decimal` AS decimal "
+    String odds = "SELECT o.id, o.selection, o.american, COALESCE(o.odds_decimal, o.`decimal`) AS decimal "
                 + "FROM markets m JOIN odds o ON o.market_id = m.id "
                 + "WHERE m.event_id = ? AND m.type = 'MONEYLINE' "
                 + "ORDER BY o.selection";

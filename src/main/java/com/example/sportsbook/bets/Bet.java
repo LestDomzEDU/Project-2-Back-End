@@ -25,8 +25,7 @@ public class Bet {
 
   @Column(name = "odds_decimal", nullable = false, precision = 8, scale = 4)
   @NotNull @DecimalMin("1.01")
-@Column(name = "odds")
-private BigDecimal oddsDecimal;
+  private BigDecimal oddsDecimal;
 
   @Column(nullable = false, precision = 10, scale = 2)
   @NotNull @DecimalMin("0.01")

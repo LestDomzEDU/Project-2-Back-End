@@ -1,81 +1,49 @@
+// src/main/java/com/example/sportsbook/bets/Bet.java
 package com.example.sportsbook.bets;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bets")
 public class Bet {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "event_id", nullable = false)
-  @NotNull
   private Long eventId;
 
-  @Column(name = "user_id")
+  @Column(name = "user_id", nullable = false)
   private Long userId;
 
-  @Column(nullable = false, length = 120)
-  @NotBlank
+  @Column(name = "selection", nullable = false, length = 120)
   private String selection;
 
-  @Column(name = "odds_decimal", nullable = false, precision = 8, scale = 4)
-  @NotNull @DecimalMin("1.01")
+  @Column(name = "odds_decimal", precision = 10, scale = 4, nullable = false)
   private BigDecimal oddsDecimal;
 
-  @Column(nullable = false, precision = 10, scale = 2)
-  @NotNull @DecimalMin("0.01")
+  @Column(name = "stake", precision = 10, scale = 2, nullable = false)
   private BigDecimal stake;
 
+  @Column(name = "bettor_ref") // nullable by default; DB is NULL DEFAULT NULL
+  private String bettorRef;
+
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(name = "status", nullable = false, length = 32)
   private BetStatus status = BetStatus.PENDING;
 
-  @Column(name = "created_at", nullable = false, updatable = false)
-  private Instant createdAt;
+  // Let the DB manage timestamps via DEFAULT / ON UPDATE.
+  // Mark them not insertable/updatable so Hibernate doesn't try to set them.
+  @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+  private LocalDateTime createdAt;
 
-  @Column(name = "updated_at", nullable = false)
-  private Instant updatedAt;
+  @Column(name = "updated_at", insertable = false, updatable = false)
+  private LocalDateTime updatedAt;
 
-  @PrePersist
-  void onCreate() {
-    Instant now = Instant.now();
-    createdAt = now;
-    updatedAt = now;
-  }
-
-  @PreUpdate
-  void onUpdate() { updatedAt = Instant.now(); }
-
-  // ==== getters/setters ====
-  public Long getId() { return id; }
-  public void setId(Long id) { this.id = id; }
-
-  public Long getEventId() { return eventId; }
-  public void setEventId(Long eventId) { this.eventId = eventId; }
-
-  public Long getUserId() { return userId; }
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public String getSelection() { return selection; }
-  public void setSelection(String selection) { this.selection = selection; }
-
-  public BigDecimal getOddsDecimal() { return oddsDecimal; }
-  public void setOddsDecimal(BigDecimal oddsDecimal) { this.oddsDecimal = oddsDecimal; }
-
-  public BigDecimal getStake() { return stake; }
-  public void setStake(BigDecimal stake) { this.stake = stake; }
-
-  public BetStatus getStatus() { return status; }
-  public void setStatus(BetStatus status) { this.status = status; }
-
-  public Instant getCreatedAt() { return createdAt; }
-  public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
-
-  public Instant getUpdatedAt() { return updatedAt; }
-  public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+  // getters/setters/constructors …
+  public Bet() {}
+  // add the rest of your accessors as you prefer (Lombok is fine too)
 }

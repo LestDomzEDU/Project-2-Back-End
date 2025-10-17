@@ -31,9 +31,10 @@ CREATE TABLE IF NOT EXISTS odds (
   market_id BIGINT NOT NULL,
   selection VARCHAR(32) NOT NULL, -- HOME or AWAY
   american INT NOT NULL,
-  decimal DECIMAL(6,2) NOT NULL,
+  odds_decimal DECIMAL(6,2) NOT NULL,
   CONSTRAINT fk_odds_market FOREIGN KEY (market_id) REFERENCES markets(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 -- Bets
 CREATE TABLE IF NOT EXISTS bets (

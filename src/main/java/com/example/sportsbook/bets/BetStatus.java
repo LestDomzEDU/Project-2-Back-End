@@ -1,2 +1,8 @@
 package com.example.sportsbook.bets;
-public enum BetStatus { PENDING, WON, LOST, VOID }
+
+public enum BetStatus {
+  PENDING,
+  WON,
+  LOST,
+  CANCELED
+}

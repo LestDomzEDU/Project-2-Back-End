@@ -1,5 +1,8 @@
 package com.example.sportsbook.bets;
 
+import com.example.sportsbook.bets.Bet;
+import com.example.sportsbook.bets.BetStatus;
+import com.example.sportsbook.bets.dto.BetCreateRequest;
 import com.example.sportsbook.bets.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +19,18 @@ public class BetService {
   public Bet get(Long id) { return repo.findById(id).orElseThrow(); }
 
   @Transactional
-  public Bet create(BetCreateRequest req) {
-    Bet b = new Bet();
-    b.setEventId(req.eventId());
-    b.setUserId(req.userId());
-    b.setSelection(req.selection());
-    b.setOddsDecimal(req.oddsDecimal());
-    b.setStake(req.stake());
-    b.setStatus(BetStatus.PENDING);
-    return repo.save(b);
-  }
+public Bet create(BetCreateRequest r) {
+  Bet b = new Bet();
+  b.setEventId(r.eventId());
+  b.setUserId(r.userId());
+  b.setSelection(r.selection());
+  b.setOddsDecimal(r.oddsDecimal());
+  b.setStake(r.stake());
+  // bettorRef is optional; set it only if you pass it
+  // b.setBettorRef(r.bettorRef());
+  b.setStatus(BetStatus.PENDING);
+  return repo.save(b);
+}
 
   @Transactional
   public Bet update(Long id, BetUpdateRequest req) {

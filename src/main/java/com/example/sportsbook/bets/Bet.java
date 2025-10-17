@@ -1,67 +1,58 @@
+// src/main/java/com/example/sportsbook/bets/Bet.java
 package com.example.sportsbook.bets;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "bets")
 public class Bet {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "created_at", nullable = false, columnDefinition = "datetime(6)")
-  private OffsetDateTime createdAt;
-
-  @Column(name = "updated_at", columnDefinition = "datetime(6)")
-  private OffsetDateTime updatedAt;
-
+  @NotNull
   @Column(name = "event_id", nullable = false)
   private Long eventId;
 
+  @NotNull
   @Column(name = "user_id", nullable = false)
   private Long userId;
 
-  @Column(name = "selection", length = 120, nullable = false)
+  @NotBlank
+  @Column(name = "selection", nullable = false, length = 120)
   private String selection;
 
-  // IMPORTANT: table column is "odds", Java field is oddsDecimal
-  @Column(name = "odds", precision = 10, scale = 4, nullable = false)
+  @NotNull
+  @Column(name = "odds_decimal", nullable = false, precision = 10, scale = 4)
   private BigDecimal oddsDecimal;
 
-  @Column(name = "stake", precision = 10, scale = 2, nullable = false)
+  @NotNull
+  @Column(name = "stake", nullable = false, precision = 10, scale = 2)
   private BigDecimal stake;
 
-  @Column(name = "bettor_ref")
-  private String bettorRef; // nullable
+  @Column(name = "bettor_ref", length = 255)
+  private String bettorRef;
 
+  @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "status", length = 32, nullable = false)
+  @Column(name = "status", nullable = false, length = 32)
   private BetStatus status = BetStatus.PENDING;
 
-  /* ---- Lifecycle hooks to set timestamps ---- */
-  @PrePersist
-  protected void onCreate() {
-    this.createdAt = OffsetDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Instant createdAt = Instant.now();
+
+  @Column(name = "updated_at")
+  private Instant updatedAt;
 
   @PreUpdate
-  protected void onUpdate() {
-    this.updatedAt = OffsetDateTime.now();
-  }
+  void touch() { this.updatedAt = Instant.now(); }
 
-  /* ---- Getters / Setters (no Lombok) ---- */
+  // --- getters/setters expected by BetService ---
+
   public Long getId() { return id; }
-  public void setId(Long id) { this.id = id; }
-
-  public OffsetDateTime getCreatedAt() { return createdAt; }
-  public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-
-  public OffsetDateTime getUpdatedAt() { return updatedAt; }
-  public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
 
   public Long getEventId() { return eventId; }
   public void setEventId(Long eventId) { this.eventId = eventId; }
@@ -83,4 +74,10 @@ public class Bet {
 
   public BetStatus getStatus() { return status; }
   public void setStatus(BetStatus status) { this.status = status; }
+
+  public Instant getCreatedAt() { return createdAt; }
+  public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+  public Instant getUpdatedAt() { return updatedAt; }
+  public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

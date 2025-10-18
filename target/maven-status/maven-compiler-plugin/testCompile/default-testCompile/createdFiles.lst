@@ -1,0 +1,5 @@
+com\example\sportsbook\HealthControllerTest.class
+com\example\sportsbook\EventAdminControllerTest.class
+com\example\sportsbook\EventControllerTest.class
+com\example\sportsbook\BetControllerTest.class
+com\example\sportsbook\UserControllerTest.class

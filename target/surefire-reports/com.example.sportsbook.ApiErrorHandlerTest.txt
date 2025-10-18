@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.example.sportsbook.ApiErrorHandlerTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.313 s -- in com.example.sportsbook.ApiErrorHandlerTest

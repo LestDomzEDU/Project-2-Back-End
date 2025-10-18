@@ -30,36 +30,37 @@ public class BetController {
     this.jdbc = jdbc;
   }
 
-  @GetMapping("/users/{id}/bets")
-  public List<Map<String,Object>> getUserBets(@PathVariable long id) {
-    return jdbc.queryForList("""
-        SELECT b.id,
-               b.user_id,
-               b.event_id,
-               b.selection,
-               b.stake_cents,
-               b.placed_at,
-               e.home,
-               e.away,
-               e.starts_at,
-               e.status as event_status,
-               COALESCE((
-                 SELECT o.american
-                 FROM markets m
-                 JOIN odds o ON o.market_id = m.id
-                 WHERE m.event_id = b.event_id
-                   AND m.type = 'MONEYLINE'
-                   AND o.selection = b.selection
-                 LIMIT 1
-               ), 0) AS price_american,
-               b.state,
-               COALESCE(e.result, '') AS result
-          FROM bets b
-          JOIN events e ON e.id = b.event_id
-         WHERE b.user_id = ?
-         ORDER BY b.placed_at DESC
-        """, id);
-  }
+@GetMapping("/users/{userId}/bets")
+public List<Map<String, Object>> listUserBets(@PathVariable long userId) {
+  return jdbc.queryForList("""
+      SELECT
+        b.id,
+        b.event_id,
+        e.league,
+        e.home_team AS home,
+        e.away_team AS away,
+        e.start_time AS starts_at,
+        b.selection,
+        b.stake_cents,
+        b.potential_payout_cents,
+        (
+          SELECT o.american
+            FROM markets m
+            JOIN odds o ON o.market_id = m.id
+           WHERE m.event_id = b.event_id
+             AND m.type = 'MONEYLINE'
+             AND o.selection = b.selection
+           LIMIT 1
+        ) AS price_american,
+        b.state,
+        COALESCE(e.result,'') AS result
+      FROM bets b
+      JOIN events e ON e.id = b.event_id
+     WHERE b.user_id = ?
+     ORDER BY b.placed_at DESC
+  """, userId);
+}
+
 
 @PostMapping("/bets")
 @ResponseStatus(HttpStatus.CREATED)

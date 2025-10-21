@@ -1,7 +1,7 @@
 *Powershell Get Method:*<br>
-Invoke-RestMethod `\
-  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `\
-  -Method GET\
+Invoke-RestMethod `  <br />
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `  <br />
+  -Method GET  <br />
 <br><br>
   *Powershell Post Method:*<br>
   Invoke-RestMethod `

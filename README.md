@@ -1,49 +1,66 @@
-# =========================
-# PowerShell API Test Script for Bets Endpoints
-# =========================
-# This script performs one of each REST call (GET, POST, PUT, DELETE)
-# against the deployed Heroku API.
-# Usage (Windows/macOS PowerShell):
-#   pwsh ./bets_api_test.ps1
+# 🧰 Bets API PowerShell Test Script
 
+This block contains one of each REST method (`GET`, `POST`, `PUT`, `DELETE`) for quick testing of your deployed Heroku API.
+
+> 📦 Copy everything inside the PowerShell block below, paste it into your PowerShell terminal (Windows or macOS using `pwsh`), and hit **Enter**.
+
+```powershell
+# ============================
+# Bets API Quick Test (PowerShell)
+# ============================
+
+# Base URL for your API
 $baseUrl = "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets"
 
-Write-Host "🔹 GET: Retrieve all bets" -ForegroundColor Cyan
-$response = Invoke-RestMethod -Uri $baseUrl -Method GET
-$response | ConvertTo-Json -Depth 5
-Write-Host "---------------------------------------------`n"
+# 🟢 GET - Retrieve all bets
+Write-Host "`n--- GET: Retrieve all bets ---" -ForegroundColor Cyan
+Invoke-RestMethod `
+  -Uri $baseUrl `
+  -Method GET | ConvertTo-Json -Depth 5
 
-Write-Host "🔹 POST: Create a new bet" -ForegroundColor Cyan
-$newBet = @{
-    eventId = 1
-    userId = 1
-    selection = "HOME"
-    oddsDecimal = 1.75
-    stake = 10.00
-    bettorRef = "script-test"
+# 🟣 POST - Create a new bet
+Write-Host "`n--- POST: Create a new bet ---" -ForegroundColor Cyan
+$postBody = @{
+  eventId = 1
+  userId = 1
+  selection = "HOME"
+  oddsDecimal = 1.75
+  stake = 10.00
+  bettorRef = "ps-test"
 }
-$postResponse = Invoke-RestMethod -Uri $baseUrl -Method POST -Headers @{ "Content-Type" = "application/json" } -Body ($newBet | ConvertTo-Json)
-$postResponse | ConvertTo-Json -Depth 5
-$newId = $postResponse.id
+$newBet = Invoke-RestMethod `
+  -Uri $baseUrl `
+  -Method POST `
+  -Headers @{ "Content-Type" = "application/json" } `
+  -Body ($postBody | ConvertTo-Json)
+$newBet | ConvertTo-Json -Depth 5
+$newId = $newBet.id
 Write-Host "Created Bet ID: $newId"
-Write-Host "---------------------------------------------`n"
 
+# 🟠 PUT - Update the created bet (if ID returned)
 if ($newId -ne $null) {
-    Write-Host "🔹 PUT: Update the created bet" -ForegroundColor Cyan
-    $updateBody = @{
-        selection = "AWAY"
-        oddsDecimal = 2.05
-        stake = 20.00
-    }
-    $putUrl = "$baseUrl/$newId"
-    $putResponse = Invoke-RestMethod -Uri $putUrl -Method PUT -Headers @{ "Content-Type" = "application/json" } -Body ($updateBody | ConvertTo-Json)
-    $putResponse | ConvertTo-Json -Depth 5
-    Write-Host "---------------------------------------------`n"
-
-    Write-Host "🔹 DELETE: Remove the created bet" -ForegroundColor Cyan
-    $deleteUrl = "$baseUrl/$newId"
-    Invoke-RestMethod -Uri $deleteUrl -Method DELETE
-    Write-Host "Bet $newId deleted successfully.`n"
+  Write-Host "`n--- PUT: Update bet $newId ---" -ForegroundColor Cyan
+  $updateBody = @{
+    selection = "AWAY"
+    oddsDecimal = 2.0
+    stake = 15.00
+  }
+  Invoke-RestMethod `
+    -Uri "$baseUrl/$newId" `
+    -Method PUT `
+    -Headers @{ "Content-Type" = "application/json" } `
+    -Body ($updateBody | ConvertTo-Json) | ConvertTo-Json -Depth 5
 } else {
-    Write-Host "⚠️  No ID returned from POST; skipping PUT and DELETE tests." -ForegroundColor Yellow
+  Write-Host "⚠️  Skipping PUT (no ID returned from POST)" -ForegroundColor Yellow
+}
+
+# 🔴 DELETE - Remove the created bet (if ID returned)
+if ($newId -ne $null) {
+  Write-Host "`n--- DELETE: Remove bet $newId ---" -ForegroundColor Cyan
+  Invoke-RestMethod `
+    -Uri "$baseUrl/$newId" `
+    -Method DELETE
+  Write-Host "Deleted Bet $newId successfully.`n" -ForegroundColor Green
+} else {
+  Write-Host "⚠️  Skipping DELETE (no ID returned from POST)" -ForegroundColor Yellow
 }

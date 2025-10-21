@@ -1,10 +1,10 @@
 *Powershell Get Method:*<br>
-Invoke-RestMethod `<br>
+Invoke-RestMethod `
   -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `
   -Method GET
 <br><br>
   *Powershell Post Method:*<br>
-  Invoke-RestMethod `<br>
+  Invoke-RestMethod `
   -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `
   -Method POST `
   -Headers @{ "Content-Type" = "application/json" } `

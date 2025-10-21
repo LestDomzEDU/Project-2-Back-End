@@ -1,33 +1,34 @@
-Add EXPO_PUBLIC_API_BASE support depending on your way to access this back-end:
-# Web
-EXPO_PUBLIC_API_BASE=http://localhost:8080 npx expo start
+*Powershell Get Method:*
+Invoke-RestMethod `
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `
+  -Method GET
 
-# Android emulator
-EXPO_PUBLIC_API_BASE=http://10.0.2.2:8080 npx expo start
+  *Powershell Post Method:*
+  Invoke-RestMethod `
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `
+  -Method POST `
+  -Headers @{ "Content-Type" = "application/json" } `
+  -Body (@{
+      eventId = 1
+      userId = 1
+      selection = "HOME"
+      oddsDecimal = 1.75
+      stake = 10.00
+      bettorRef = "ps-test"
+  } | ConvertTo-Json)
 
-# Physical device
-EXPO_PUBLIC_API_BASE="https://sportsbook-api-lester--efa829183023.herokuapp.com" npx expo start -c
+  *Powershell Put Method:*
+  Invoke-RestMethod `
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets/3" `
+  -Method PUT `
+  -Headers @{ "Content-Type" = "application/json" } `
+  -Body (@{
+      selection = "AWAY"
+      oddsDecimal = 2.0
+      stake = 15.00
+  } | ConvertTo-Json)
 
-
-**When you are running the back-end repo, use these commands:**
-
-docker compose up -d
-
-mvn spring-boot:run
-
-
-**In the front end run using these commands:**
-npm install
-
-Set EXPO_PUBLIC_API_BASE env var
-
-npx expo start -c
-
-# Heroku set up instructions:
-# Windows PowerShell
-$env:EXPO_PUBLIC_API_BASE="https://sportsbook-api-lester--efa829183023.herokuapp.com"
-npx expo start -c
-
-# Run backend locally (optional)
-docker compose up -d
-mvn spring-boot:run
+  *Powershell DELETE Method:*
+  Invoke-RestMethod `
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets/1" `
+  -Method DELETE

@@ -1,13 +1,13 @@
 *Powershell Get Method:*<br>
 Invoke-RestMethod `<br>
-  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `<br>
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `
   -Method GET<br>
 <br><br>
   *Powershell Post Method:*<br>
   Invoke-RestMethod `<br>
-  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `<br>
-  -Method POST `<br>
-  -Headers @{ "Content-Type" = "application/json" } `<br>
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets" `
+  -Method POST `
+  -Headers @{ "Content-Type" = "application/json" } `
   -Body (@{
       eventId = 1
       userId = 1
@@ -18,10 +18,10 @@ Invoke-RestMethod `<br>
   } | ConvertTo-Json)<br>
 <br><br>
   *Powershell Put Method:*<br>
-  Invoke-RestMethod `<br>
-  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets/3" `<br>
-  -Method PUT `<br>
-  -Headers @{ "Content-Type" = "application/json" } `<br>
+  Invoke-RestMethod `
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets/3" `
+  -Method PUT `
+  -Headers @{ "Content-Type" = "application/json" } `
   -Body (@{
       selection = "AWAY"
       oddsDecimal = 2.0
@@ -29,6 +29,6 @@ Invoke-RestMethod `<br>
   } | ConvertTo-Json)<br>
 <br>
   *Powershell DELETE Method:*<br>
-  Invoke-RestMethod `<br>
-  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets/1" `<br>
+  Invoke-RestMethod `
+  -Uri "https://sportsbook-api-lester-efa829183023.herokuapp.com/api/bets/1" `
   -Method DELETE

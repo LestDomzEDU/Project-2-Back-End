@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- V1__init.sql  (MariaDB/MySQL)
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -15,18 +16,44 @@ CREATE TABLE IF NOT EXISTS events (
   status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
   result VARCHAR(10)
 ) ENGINE=InnoDB;
+=======
+-- Schema
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  display_name VARCHAR(120),
+  created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS events (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  league VARCHAR(64) NOT NULL,
+  home_team VARCHAR(120) NOT NULL,
+  away_team VARCHAR(120) NOT NULL,
+  start_time TIMESTAMP(6) NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'SCHEDULED',
+  result VARCHAR(16)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+>>>>>>> origin/main
 
 CREATE TABLE IF NOT EXISTS markets (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   event_id BIGINT NOT NULL,
+<<<<<<< HEAD
   type VARCHAR(20) NOT NULL,
   CONSTRAINT fk_market_event FOREIGN KEY (event_id) REFERENCES events(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
+=======
+  type VARCHAR(32) NOT NULL, -- e.g. MONEYLINE
+  CONSTRAINT fk_market_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+>>>>>>> origin/main
 
 CREATE TABLE IF NOT EXISTS odds (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   market_id BIGINT NOT NULL,
+<<<<<<< HEAD
   selection VARCHAR(10) NOT NULL,
   american INT NOT NULL,
   decimal_odds DECIMAL(6,2) NOT NULL,
@@ -45,3 +72,24 @@ CREATE TABLE IF NOT EXISTS bets (
   CONSTRAINT fk_bet_user  FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_bet_event FOREIGN KEY (event_id) REFERENCES events(id)
 ) ENGINE=InnoDB;
+=======
+  selection VARCHAR(32) NOT NULL, -- HOME or AWAY
+  american INT NOT NULL,
+  odds_decimal DECIMAL(6,2) NOT NULL,
+  CONSTRAINT fk_odds_market FOREIGN KEY (market_id) REFERENCES markets(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS bets (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  event_id BIGINT NOT NULL,
+  user_id BIGINT,
+  selection VARCHAR(120) NOT NULL,
+  odds_decimal DECIMAL(8,2) NOT NULL,
+  stake DECIMAL(10,2) NOT NULL,
+  bettor_ref VARCHAR(120),
+  status VARCHAR(16) NOT NULL DEFAULT 'PENDING',
+  created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at TIMESTAMP(6) NULL,
+  CONSTRAINT fk_bet_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+>>>>>>> origin/main

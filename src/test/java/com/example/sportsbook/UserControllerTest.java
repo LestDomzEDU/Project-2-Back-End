@@ -1,13 +1,18 @@
 package com.example.sportsbook;
 
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Map;
 
+=======
+import com.example.sportsbook.controller.UserController;
+>>>>>>> origin/main
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+<<<<<<< HEAD
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
@@ -20,10 +25,25 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.example.sportsbook.controller.UserController;
 import com.fasterxml.jackson.databind.ObjectMapper;
+=======
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.ArrayList;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+>>>>>>> origin/main
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
+<<<<<<< HEAD
     private MockMvc mockMvc;
 
     @Mock
@@ -72,3 +92,24 @@ class UserControllerTest {
             .andExpect(jsonPath("$.length()").value(0));
     }
 }
+=======
+    private MockMvc mvc;
+
+    @Mock JdbcTemplate jdbc;
+
+    @InjectMocks UserController controller;
+
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders.standaloneSetup(controller).build();
+    }
+
+    @Test
+    void listUsers_ok() throws Exception {
+        when(jdbc.queryForList(anyString())).thenReturn(new ArrayList<>());
+        mvc.perform(get("/api/users"))
+           .andExpect(status().isOk())
+           .andExpect(content().json("[]"));
+    }
+}
+>>>>>>> origin/main

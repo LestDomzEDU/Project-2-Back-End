@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS bets (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  event_id BIGINT NOT NULL,
+  user_id BIGINT NULL,                -- hook up auth later
+  selection VARCHAR(120) NOT NULL,    -- e.g., "Lakers -3.5"
+  odds_decimal DECIMAL(8,4) NOT NULL, -- e.g., 1.9100
+  stake DECIMAL(10,2) NOT NULL,       -- currency
+  status ENUM('PENDING','WON','LOST','VOID','CANCELED','SETTLED') NOT NULL DEFAULT 'PENDING',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_bets_event FOREIGN KEY (event_id) REFERENCES events(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

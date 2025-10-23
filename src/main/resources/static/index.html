@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Welcome</title></head>
+  <body>
+    <h1>Welcome</h1>
+    <p id="auth">
+      <a id="login" href="/oauth2/authorization/github">Login with GitHub</a>
+      &nbsp;|&nbsp;
+      <a id="me" href="/api/me" target="_blank">Who am I?</a>
+      &nbsp;|&nbsp;
+      <form id="logoutForm" action="/logout" method="post" style="display:inline">
+        <button type="submit">Logout</button>
+      </form>
+    </p>
+
+    <script>
+      fetch('/api/me', {credentials:'include'})
+        .then(r => r.ok ? r.json() : {authenticated:false})
+        .then(data => {
+          const loggedIn = data && (data.authenticated === true || !!data.login);
+          document.getElementById('login').style.display = loggedIn ? 'none' : 'inline';
+          document.getElementById('logoutForm').style.display = loggedIn ? 'inline' : 'none';
+        })
+        .catch(() => {});
+    </script>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+app:
+  oauth:
+    enabled: true
+
+spring:
+  # Simple in-memory DB for local runs. You can switch to MariaDB later.
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            # Using Spring's "hierarchical" env vars is the most reliable.
+            # Set these in PowerShell:
+            #   $env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_ID    = "<id>"
+            #   $env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_SECRET = "<secret>"
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_SECRET}
+            scope: read:user, user:email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
